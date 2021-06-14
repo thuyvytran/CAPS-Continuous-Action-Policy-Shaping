@@ -224,7 +224,7 @@ for j in range(10,30):
             # if(env_interacts%10 == 0 or env_interacts == 1):
             if agent_learn:
                 action, dist, mu, sigma, kl_total = sample_normal(
-                    agent, actor, observation, with_noise=False, max_action=env.action_space.high, env_only=False, kappa=1)
+                    agent, actor, observation, with_noise=False, max_action=env.action_space.high, env_only=False, kappa=.9)
             else:
             #env_only = True
                 action, dist, mu, sigma, kl_total = sample_normal(
