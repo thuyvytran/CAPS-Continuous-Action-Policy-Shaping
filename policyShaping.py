@@ -21,13 +21,61 @@ from sac_torch import Agent
 from buffer import ReplayBuffer
 
 import threading
-
+import sys
 
 """
 The following class was adopted from stackoverflow  user timgeb 
 from url: https://stackoverflow.com/questions/24000455/python-how-to-get-input-from-console-while-an-infinite-loop-is-running
 """
 
+"""
+Checks to make sure the user enters the correct number of arguments in the cmd line.
+Also checks to make sure the arguments given is an integer
+If the user enters the information wrong the program will prompt the correct way to 
+enter the information and then exits out of the program
+"""
+def checkCmdArg():
+    if len(sys.argv) != 4:
+        print("policyShaping.py <kappa> <num-trials> <num_episodes>")
+        sys.exit(2)
+    for arg in sys.argv[1:]:
+        try:
+            int(arg)
+        except ValueError:
+            print("policyShaping.py <kappa> <num-trials> <num_episodes>")
+            sys.exit(2)
+
+"""
+Default value of the three variables 
+goes into a function to see if user input the correct information
+"""
+def main():
+    num_kappa = .9
+    num_trials = 10
+    num_episodes = 300
+    checkCmdArg()
+"""
+Loops through the cmd line arguments to give the variables
+a new value and cast it to an int for extra security.
+"""
+if __name__ == "__main__":
+   main()
+   for m in range(1,len(sys.argv)):
+       if m == 1:
+        num_kappa = int(sys.argv[m])
+       if m == 2:
+           num_trials = int(sys.argv[m])
+       if m == 3:
+           num_episodes = int(sys.argv[m])
+
+"""
+Print statements for the three variables just in case you want to 
+check if it works
+
+print(num_kappa, end=" ")
+print(num_trials, end=" ")
+print(num_episodes, end=" ")
+"""
 
 class FeedbackThread(threading.Thread):
     def __init__(self):
@@ -82,8 +130,23 @@ class ActionQueue:
                 i += 1
             return np.mean(np.array(avg_loss))
 
+'''
+- for the loop 
+- the whole point rerun the code in the command line so it will generate a graph
+- for j in range(10,30) instead 10 to 30 it should be an argument so like numFile
+- so it will be something like for j in range(0, numFile) so it can take in any number
+- range in python automatically sets it to 0 to numFile
+- default: kappa=.9, num_trials = 10, num_episodes = 300
+- need to do this entire thing in the main
+- need to do a for loop in the main.
+- print out the arguements 
+- do small number 
 
-for j in range(10,30):
+
+'''
+#trial_reward = []
+
+for j in range(10,num_trials):
     
     env = gym.make('BipedalWalker-v3')
 
@@ -91,7 +154,7 @@ for j in range(10,30):
     interval_min = .1
     interval_max = .8
 
-    episodes = 300
+    episodes = 300 #change this to num_episodes
     USE_CUDA = torch.cuda.is_available()
     learning_rate = .001
     replay_buffer_size = 100000
@@ -134,7 +197,7 @@ for j in range(10,30):
     env_only = False
     best = -500
     agent_learn = True
-    kappa = 1
+    kappa = num_kappa
     time_since = 1
 
     for i in range(episodes):
