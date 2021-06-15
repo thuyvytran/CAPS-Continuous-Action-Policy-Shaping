@@ -62,7 +62,7 @@ if __name__ == "__main__":
    main()
    for m in range(1,len(sys.argv)):
        if m == 1:
-        num_kappa = int(sys.argv[m])
+           num_kappa = int(sys.argv[m])
        if m == 2:
            num_trials = int(sys.argv[m])
        if m == 3:
