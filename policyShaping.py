@@ -103,7 +103,7 @@ def main(num_kappa, num_trials, num_episodes):
     print(f"Number of Trials: {num_trials}")
     print(f"Number of Episodes per Trial: {num_episodes}")
 
-    #trial_reward = []
+    trial_rewards = []
 
     for j in range(num_trials):
         
@@ -246,6 +246,47 @@ def main(num_kappa, num_trials, num_episodes):
                     #feedback_thread.reset()
                     break
     
+        trial_rewards.append(rewards)
+
+    trial_avg = []
+    for i in range(len(trial_rewards)):
+        temp_prime = []
+        for j in range(len(trial_rewards[i])):
+            if j > 10:
+                temp_prime.append(np.average(trial_rewards[i][j-10:j]))
+
+        trial_avg.append(temp_prime)
+
+    trial_mean = np.mean(trial_avg, axis=0)
+    trial_std = np.std(trial_avg, axis=0)
+    print(trial_mean, trial_std)
+
+    fig, ax = plt.subplots() 
+
+    # Let's remove those black lines:
+    right_side = ax.spines["right"]
+    top_side = ax.spines["top"]
+    right_side.set_visible(False)
+    top_side.set_visible(False)
+
+    axes = plt.gca()
+    axes.set_xlim([0,num_episodes])
+    axes.set_ylim([-125,300])
+
+    plt.yticks(fontsize=14) 
+    plt.xticks(fontsize=14) 
+
+    plt.xlabel("Episode Number", fontsize="xx-large")
+    plt.ylabel("Avg. Reward Over Last 10ep", fontsize="xx-large")
+    plt.title("CAPS BipedalWalker (seeable)", fontsize="xx-large")
+
+    ep_range = np.linspace(0, num_episodes, len(trial_mean))
+
+    plt.plot(ep_range, trial_mean, linewidth=2, label="CAPS")
+    plt.fill_between(ep_range, trial_mean-trial_std, trial_std+trial_std, alpha=.3)
+    plt.savefig("CAPS_BipedalWalker", bbox_inches="tight")
+    plt.show()
+    
 """
 Loops through the cmd line arguments to give the variables
 a new value and cast it to an int for extra security.
@@ -262,4 +303,8 @@ if __name__ == "__main__":
             num_trials = int(sys.argv[m])
         if m == 3:
             num_episodes = int(sys.argv[m])
+    
+    if num_episodes <= 10:
+        print("Min number of episodes is 11")
+        num_episodes = 11
     main(num_kappa, num_trials, num_episodes)
